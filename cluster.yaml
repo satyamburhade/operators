@@ -1,0 +1,20 @@
+---
+apiVersion: operator.openshift.io/v1alpha1
+kind: CertManager
+metadata:
+  name: cluster
+  annotations:
+    argocd.argoproj.io/sync-wave: '5'
+spec:
+  managementState: Managed
+  unsupportedConfigOverrides:
+    controller:
+      args:
+        - start
+        - --v=2
+        - --cluster-resource-namespace=$(POD_NAMESPACE)
+        - --leader-election-namespace=openshift-cert-manager
+        # Needed to make it work with openshift + AWS made following
+        # documentation recommendations
+        # https://github.com/openshift/cert-manager-operator#using-unsupported-config-overrides-options
+        - --dns01-recursive-nameservers=8.8.8.8:53,8.8.4.4:53
